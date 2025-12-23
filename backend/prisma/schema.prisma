@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  flights      Flight[]
+
+  @@map("users")
+}
+
+// Flight model
+model Flight {
+  id                 String    @id @default(uuid())
+  userId             String    @map("user_id")
+  flightNumber       String    @map("flight_number")
+  flightDate         DateTime  @map("flight_date")
+  departureAirport   String    @map("departure_airport")
+  arrivalAirport     String    @map("arrival_airport")
+  airlineCode        String    @map("airline_code")
+  aircraftType       String?   @map("aircraft_type")
+  tailNumber         String?   @map("tail_number")
+  scheduledDeparture DateTime? @map("scheduled_departure")
+  actualDeparture    DateTime? @map("actual_departure")
+  scheduledArrival   DateTime? @map("scheduled_arrival")
+  actualArrival      DateTime? @map("actual_arrival")
+  seatNumber         String?   @map("seat_number")
+  flightClass        String?   @map("flight_class")
+  notes              String?
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user                 User    @relation(fields: [userId], references: [id])
+  departureAirportData Airport @relation("DepartureAirport", fields: [departureAirport], references: [iataCode])
+  arrivalAirportData   Airport @relation("ArrivalAirport", fields: [arrivalAirport], references: [iataCode])
+  airline              Airline @relation(fields: [airlineCode], references: [iataCode])
+
+  // Indexes
+  @@index([userId])
+  @@index([flightDate])
+  @@index([departureAirport])
+  @@index([arrivalAirport])
+  @@map("flights")
+}
+
+// Airport reference data model
+model Airport {
+  iataCode  String  @id @db.VarChar(3)
+  icaoCode  String? @db.VarChar(4)
+  name      String
+  city      String
+  country   String
+  timezone  String?
+  latitude  Float?
+  longitude Float?
+
+  // Relations
+  departureFlights Flight[] @relation("DepartureAirport")
+  arrivalFlights   Flight[] @relation("ArrivalAirport")
+
+  @@map("airports")
+}
+
+// Airline reference data model
+model Airline {
+  iataCode String   @id @db.VarChar(2)
+  icaoCode String?  @db.VarChar(3)
+  name     String
+  country  String
+  flights  Flight[]
+
+  @@map("airlines")
+}
+
+// ApiCache model to reduce API calls
+model ApiCache {
+  id        String   @id @default(uuid())
+  cacheKey  String   @unique @map("cache_key")
+  cacheData Json     @map("cache_data")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Indexes
+  @@index([cacheKey])
+  @@index([expiresAt])
+  @@map("api_cache")
+}
