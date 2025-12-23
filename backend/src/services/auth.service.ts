@@ -95,7 +95,8 @@ function isValidEmail(email: string): boolean {
  * Create a new user
  */
 export async function createUser(email: string, password: string): Promise<UserResponse> {
-  // Validate email format
+  // Validate email format (defense-in-depth: service layer validation)
+  // This ensures the service is robust even if called outside of validated routes
   if (!isValidEmail(email)) {
     throw new ValidationError('Invalid email format');
   }
