@@ -9,9 +9,13 @@ const envSchema = z.object({
   PORT: z.string().default('3000').transform(Number),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
-  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
-  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
-  JWT_REFRESH_SECRET: z.string().min(1, 'JWT_REFRESH_SECRET is required'),
+  DATABASE_URL: z.string()
+    .min(1, 'DATABASE_URL is required')
+    .regex(/^postgresql:\/\//, 'DATABASE_URL must be a valid PostgreSQL connection string'),
+  JWT_SECRET: z.string()
+    .min(32, 'JWT_SECRET must be at least 32 characters for security'),
+  JWT_REFRESH_SECRET: z.string()
+    .min(32, 'JWT_REFRESH_SECRET must be at least 32 characters for security'),
   AVIATION_API_KEY: z.string().optional(),
 });
 

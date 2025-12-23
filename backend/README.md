@@ -44,12 +44,15 @@ PORT=3000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 DATABASE_URL=postgresql://user:password@localhost:5432/flightlogger
-JWT_SECRET=your-secret-key-change-this
-JWT_REFRESH_SECRET=your-refresh-secret-change-this
+JWT_SECRET=change-this-to-a-secure-random-string-at-least-32-characters-long
+JWT_REFRESH_SECRET=change-this-to-another-secure-random-string-at-least-32-chars
 AVIATION_API_KEY=your-api-key-here
 ```
 
-**Important:** Make sure to change the JWT secrets and database credentials!
+**Important:** 
+- Change the JWT secrets to secure random strings (at least 32 characters)
+- Update the database credentials
+- The JWT secrets must be at least 32 characters for security validation
 
 ### 3. Development
 

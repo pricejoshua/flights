@@ -32,11 +32,11 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught Exception:', error);
-  process.exit(1);
+  gracefulShutdown('UNCAUGHT_EXCEPTION');
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: unknown) => {
   logger.error('Unhandled Rejection:', reason instanceof Error ? reason : new Error(String(reason)));
-  process.exit(1);
+  gracefulShutdown('UNHANDLED_REJECTION');
 });
