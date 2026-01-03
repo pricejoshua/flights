@@ -1,10 +1,26 @@
 # Flight Logger Backend
 
-Backend service for the Flight Logger application built with Node.js, TypeScript, and Prisma ORM.
+Backend API for the Flight Logger application, built with Express.js, TypeScript, and Prisma ORM.
+
+## Features
+
+- ✅ TypeScript for type safety
+- ✅ Express.js for REST API
+- ✅ Prisma ORM with PostgreSQL
+- ✅ Environment variable validation with Zod
+- ✅ CORS configuration
+- ✅ Error handling middleware
+- ✅ Request validation middleware
+- ✅ Logging utility
+- ✅ Health check endpoint
+- ✅ Graceful shutdown handling
+- ✅ Database migrations and seeding
+- ✅ Type-safe database access
 
 ## Prerequisites
 
 - Node.js 18+ 
+- npm or yarn
 - PostgreSQL 14+ database
 
 ## Quick Start
@@ -12,6 +28,7 @@ Backend service for the Flight Logger application built with Node.js, TypeScript
 ### 1. Install Dependencies
 
 ```bash
+cd backend
 npm install
 ```
 
@@ -23,10 +40,16 @@ Copy the example environment file and configure your database:
 cp .env.example .env
 ```
 
-Edit `.env` and set your `DATABASE_URL`:
+Edit `.env` and set your configuration:
 
-```
+```env
+PORT=3000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
 DATABASE_URL="postgresql://username:password@localhost:5432/flightlogger?schema=public"
+JWT_SECRET=change-this-to-a-secure-random-string-at-least-32-characters-long
+JWT_REFRESH_SECRET=change-this-to-another-secure-random-string-at-least-32-chars
+AVIATION_API_KEY=your-api-key-here
 ```
 
 ### 3. Set Up Database
@@ -65,8 +88,23 @@ npm run db:migrate
 npm run db:seed
 ```
 
-## Database Scripts
+### 5. Start Development Server
 
+```bash
+npm run dev
+```
+
+The server will start at http://localhost:3000
+
+## Available Scripts
+
+### Development
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run type-check` - Type check without building
+
+### Database Scripts
 - `npm run db:migrate` - Create and apply new migration
 - `npm run db:push` - Push schema changes without creating migration
 - `npm run db:seed` - Populate database with reference data
@@ -94,19 +132,58 @@ backend/
 │   ├── schema.prisma      # Database schema definition
 │   └── seed.ts            # Database seed script
 ├── src/
-│   └── config/
-│       └── database.ts    # Prisma Client singleton
+│   ├── config/
+│   │   ├── database.ts    # Prisma Client singleton
+│   │   └── env.ts         # Environment validation
+│   ├── middleware/
+│   │   ├── auth.ts        # Authentication middleware
+│   │   ├── errorHandler.ts # Global error handler
+│   │   └── validation.ts  # Request validation
+│   ├── routes/
+│   │   └── index.ts       # Route definitions
+│   ├── types/
+│   │   └── index.ts       # TypeScript types
+│   ├── utils/
+│   │   └── logger.ts      # Logging utility
+│   ├── app.ts             # Express app setup
+│   └── server.ts          # Server entry point
+├── .env.example           # Environment variables template
 ├── package.json           # Dependencies and scripts
 ├── prisma.config.ts       # Prisma configuration
 └── tsconfig.json          # TypeScript configuration
 ```
+
+## API Endpoints
+
+### Health Check
+- `GET /health` - Server health status
+
+### Authentication (Coming Soon)
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/refresh` - Refresh access token
+
+### Flights (Coming Soon)
+- `GET /api/flights` - Get user's flights
+- `POST /api/flights` - Create new flight
+- `GET /api/flights/:id` - Get flight details
+- `PUT /api/flights/:id` - Update flight
+- `DELETE /api/flights/:id` - Delete flight
+
+### Airports (Coming Soon)
+- `GET /api/airports` - Get airports
+- `GET /api/airports/:iataCode` - Get airport details
+
+### Airlines (Coming Soon)
+- `GET /api/airlines` - Get airlines
+- `GET /api/airlines/:iataCode` - Get airline details
 
 ## Development
 
 ### TypeScript Compilation
 
 ```bash
-npx tsc
+npm run build
 ```
 
 ### View Database with Prisma Studio
@@ -116,6 +193,34 @@ npm run db:studio
 ```
 
 Opens at http://localhost:5555
+
+## Environment Variables
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `PORT` | Server port | No | `3000` |
+| `NODE_ENV` | Environment (development/production) | No | `development` |
+| `DATABASE_URL` | PostgreSQL connection string | Yes | - |
+| `FRONTEND_URL` | Frontend URL for CORS | No | `http://localhost:5173` |
+| `JWT_SECRET` | Secret for access tokens | Yes | - |
+| `JWT_REFRESH_SECRET` | Secret for refresh tokens | Yes | - |
+| `AVIATION_API_KEY` | External aviation API key | No | - |
+
+## Error Handling
+
+The application uses a centralized error handling middleware that:
+- Catches all errors
+- Logs error details
+- Returns consistent error responses
+- Handles validation errors from Zod
+
+## Security
+
+- Environment variables for sensitive data
+- JWT for authentication
+- CORS configuration
+- Input validation with Zod
+- SQL injection prevention via Prisma
 
 ## Troubleshooting
 
@@ -138,17 +243,32 @@ npm run db:migrate
 npm run db:seed
 ```
 
+### Port Already in Use
+
+If port 3000 is in use, change it in `.env`:
+```env
+PORT=3001
+```
+
 ## Next Steps
 
-After setting up the database:
+After setting up the backend:
 
 1. Implement authentication endpoints
 2. Create flight CRUD operations
 3. Integrate with flight data APIs
 4. Build analytics/statistics features
+5. Add rate limiting
+6. Add API documentation (Swagger/OpenAPI)
 
 ## Resources
 
+- [Express Documentation](https://expressjs.com/)
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs)
+- [Zod Documentation](https://zod.dev/)
+
+## License
+
+ISC
